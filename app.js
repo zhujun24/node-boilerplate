@@ -1,28 +1,40 @@
 import Koa from 'koa'
+import KoaRouter from 'koa-router'
+import bodyParser from 'koa-bodyparser'
+import json from 'koa-json'
 import timer from './middleware/timer'
-import { testDB, mongoInit } from './lib/mongo'
+import { TestDB, dbInit } from './db/dbInit'
+import health from './controllers/health'
 
 const app = new Koa()
+const router = new KoaRouter()
 
 app.use(timer)
+app.use(bodyParser())
+app.use(json())
+
+router.get('/db', async (ctx) => {
+  ctx.body = await TestDB.find({
+    collection: 'test'
+  })
+})
+
+router.get('/', async (ctx) => {
+  ctx.body = await TestDB.find({
+    collection: 'blogger'
+  })
+})
+
+router.get('/', health)
+router.get('/health', health)
 
 ;(async () => {
   await Promise.all([
-    mongoInit
+    dbInit()
   ])
 
-  const DbFInd = async () => {
-    return new Promise((resolve) => {
-      testDB.collection('demo').find({}).toArray((err, docs) => {
-        console.log(docs)
-        resolve(docs)
-      })
-    })
-  }
-
-  app.use(async (ctx) => {
-    ctx.body = await DbFInd()
-  })
+  app.use(router.routes())
+    .use(router.allowedMethods())
 
   app.listen(3000)
 })()
