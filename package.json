@@ -4,6 +4,7 @@
   "description": "NodeJS Server Boilerplate",
   "main": "index.js",
   "scripts": {
+    "start": "npm run dev",
     "dev": "nodemon node .",
     "fix": "standard \"./src/*.js\" --fix",
     "test": "mocha test",
