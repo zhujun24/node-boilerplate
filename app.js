@@ -19,12 +19,6 @@ router.get('/db', async (ctx) => {
   })
 })
 
-router.get('/', async (ctx) => {
-  ctx.body = await TestDB.find({
-    collection: 'blogger'
-  })
-})
-
 router.get('/', health)
 router.get('/health', health)
 
